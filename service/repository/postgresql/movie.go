@@ -89,12 +89,48 @@ func (m movieRepository) InsertMovie(ctx context.Context, movie model.Movie) (mo
 	return movie, nil
 }
 
-func (m movieRepository) UpdateMovie(id uuid.UUID, movie model.Movie) (model.Movie, error) {
-	// TODO: do something
-	return model.Movie{}, nil
+func (m movieRepository) UpdateMovie(ctx context.Context, newMovie model.Movie) (model.Movie, error) {
+	tx, err := m.DB.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return model.Movie{}, fmt.Errorf("[postgresql][UpdateMovie] begin transaction error: %w", err)
+	}
+	defer tx.Rollback()
+
+	var updatedMovie model.Movie
+	if err := tx.QueryRowContext(ctx, queryUpdateMovie, newMovie.Id, newMovie.Title, newMovie.Description, newMovie.Rating, newMovie.Image).Scan(
+		&updatedMovie.Id,
+		&updatedMovie.Title,
+		&updatedMovie.Description,
+		&updatedMovie.Rating,
+		&updatedMovie.Image,
+		&updatedMovie.CreatedAt,
+		&updatedMovie.UpdatedAt,
+	); err != nil {
+		return model.Movie{}, fmt.Errorf("[postgresql][UpdateMovie] execution error: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return model.Movie{}, fmt.Errorf("[postgresql][UpdateMovie] commit error: %w", err)
+	}
+
+	return updatedMovie, nil
 }
 
-func (m movieRepository) DeleteMovie(id uuid.UUID) error {
-	// TODO: do something
+func (m movieRepository) DeleteMovie(ctx context.Context, id uuid.UUID) error {
+	tx, err := m.DB.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return fmt.Errorf("[postgresql][DeleteMovie] begin transaction error: %w", err)
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(ctx, queryDeleteMovie, id)
+	if err != nil {
+		return fmt.Errorf("[postgresql][DeleteMovie] execution error: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("[postgresql][DeleteMovie] commit error: %w", err)
+	}
+
 	return nil
 }

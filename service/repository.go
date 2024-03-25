@@ -16,6 +16,10 @@ type MovieRepository interface {
 
 	// InsertMovie inserts a new movie in the database
 	InsertMovie(ctx context.Context, movie model.Movie) (model.Movie, error)
-	UpdateMovie(id uuid.UUID, movie model.Movie) (model.Movie, error)
-	DeleteMovie(id uuid.UUID) error
+
+	// UpdateMovie updates an existing movie in the database
+	UpdateMovie(ctx context.Context, newMovie model.Movie) (model.Movie, error)
+
+	// DeleteMovie deletes a movie from the database
+	DeleteMovie(ctx context.Context, id uuid.UUID) error
 }

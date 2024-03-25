@@ -9,6 +9,6 @@ func (h *Handler) routes() {
 	movieGroup.GET("", h.listMovie)
 	movieGroup.GET("/:id", h.detailMovie)
 	movieGroup.POST("", h.addNewMovie)
-	movieGroup.PUT("", h.updateMovie)
-	movieGroup.DELETE("", h.deleteMovie)
+	movieGroup.PATCH("/:id", h.updateMovie)
+	movieGroup.DELETE("/:id", h.deleteMovie)
 }

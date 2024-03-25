@@ -57,7 +57,7 @@ func (m movie) GetMovie(ctx context.Context, id uuid.UUID) (model.MovieDetailRes
 	}, nil
 }
 
-func (m movie) AddNewMovie(ctx context.Context, request model.AddNewMovieRequest) (model.MovieDetailResponse, error) {
+func (m movie) AddNewMovie(ctx context.Context, request model.NewMovieRequest) (model.MovieDetailResponse, error) {
 	// prepare new movie
 	newMovie, err := model.NewMovie(request)
 	if err != nil {
@@ -75,12 +75,34 @@ func (m movie) AddNewMovie(ctx context.Context, request model.AddNewMovieRequest
 	}, nil
 }
 
-func (m movie) UpdateMovie(id uuid.UUID, movie model.Movie) (model.MovieDetailResponse, error) {
-	// TODO: do something
-	return model.MovieDetailResponse{}, nil
+func (m movie) UpdateMovie(ctx context.Context, id uuid.UUID, request model.NewMovieRequest) (model.MovieDetailResponse, error) {
+	updatedMovie, err := m.movieRepository.UpdateMovie(ctx, model.NewUpdateMovie(id, request))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return model.MovieDetailResponse{}, model.ErrNotFound
+		}
+
+		return model.MovieDetailResponse{}, fmt.Errorf("[usecase][UpdateMovie] error update movie: %v", err)
+	}
+
+	return model.MovieDetailResponse{
+		Movie: updatedMovie,
+	}, nil
 }
 
-func (m movie) DeleteMovie(id uuid.UUID) error {
-	// TODO: do something
+func (m movie) DeleteMovie(ctx context.Context, id uuid.UUID) error {
+	movie, err := m.movieRepository.GetMovie(ctx, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return model.ErrNotFound
+		}
+		return fmt.Errorf("[usecase][DeleteMovie] error: %v", err)
+	}
+
+	err = m.movieRepository.DeleteMovie(ctx, movie.Id)
+	if err != nil {
+		return fmt.Errorf("[usecase][DeleteMovie] error delete: %v", err)
+	}
+
 	return nil
 }

@@ -97,7 +97,7 @@ func (h Handler) detailMovie(c echo.Context) error {
 
 func (h Handler) addNewMovie(c echo.Context) error {
 	// validate request and adjust param
-	var body model.AddNewMovieRequest
+	var body model.NewMovieRequest
 	err := c.Bind(&body)
 	if err != nil {
 		return err
@@ -119,9 +119,32 @@ func (h Handler) addNewMovie(c echo.Context) error {
 }
 
 func (h Handler) updateMovie(c echo.Context) error {
-	// TODO: validate request and adjust param
-	movie, err := h.movieUsecase.UpdateMovie(uuid.New(), model.Movie{})
+	id := c.Param("id")
+	idUUID, err := uuid.Parse(id)
 	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	// validate request and adjust param
+	var body model.NewMovieRequest
+	err = c.Bind(&body)
+	if err != nil {
+		return err
+	}
+
+	err = body.Validate()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
+	}
+
+	movie, err := h.movieUsecase.UpdateMovie(c.Request().Context(), idUUID, body)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return c.NoContent(http.StatusNotFound)
+		}
+
 		return err
 	}
 
@@ -129,9 +152,18 @@ func (h Handler) updateMovie(c echo.Context) error {
 }
 
 func (h Handler) deleteMovie(c echo.Context) error {
-	// TODO: validate request and adjust param
-	err := h.movieUsecase.DeleteMovie(uuid.New())
+	id := c.Param("id")
+	idUUID, err := uuid.Parse(id)
 	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	err = h.movieUsecase.DeleteMovie(c.Request().Context(), idUUID)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return c.NoContent(http.StatusNotFound)
+		}
+
 		return err
 	}
 
