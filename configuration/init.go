@@ -25,6 +25,7 @@ func Init() *configuration {
 	return configuration.
 		initTimezone().
 		initPostgreSql().
+		migrate().
 		initServer().
 		initService()
 }
