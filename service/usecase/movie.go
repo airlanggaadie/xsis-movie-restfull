@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"xsis/assignment-test/model"
 	"xsis/assignment-test/service"
@@ -41,9 +43,18 @@ func (m movie) GetMoviesPaginate(ctx context.Context, page, limit int) (model.Li
 	}, nil
 }
 
-func (m movie) GetMovie(id uuid.UUID) (model.MovieDetailResponse, error) {
-	// TODO: do something
-	return model.MovieDetailResponse{}, nil
+func (m movie) GetMovie(ctx context.Context, id uuid.UUID) (model.MovieDetailResponse, error) {
+	movie, err := m.movieRepository.GetMovie(ctx, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return model.MovieDetailResponse{}, model.ErrNotFound
+		}
+		return model.MovieDetailResponse{}, fmt.Errorf("[usecase][GetMovie] error: %v", err)
+	}
+
+	return model.MovieDetailResponse{
+		Movie: movie,
+	}, nil
 }
 
 func (m movie) AddNewMovie(ctx context.Context, request model.AddNewMovieRequest) (model.MovieDetailResponse, error) {

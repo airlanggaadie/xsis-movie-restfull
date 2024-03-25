@@ -10,7 +10,9 @@ import (
 type MovieUsecase interface {
 	// GetMoviesPaginate returns a list of movies with total data
 	GetMoviesPaginate(ctx context.Context, page, limit int) (model.ListMovieResponse, error)
-	GetMovie(id uuid.UUID) (model.MovieDetailResponse, error)
+
+	// GetMovie returns a single movie
+	GetMovie(ctx context.Context, id uuid.UUID) (model.MovieDetailResponse, error)
 
 	// AddNewMovie adds a new movie to the list of movies
 	AddNewMovie(ctx context.Context, movie model.AddNewMovieRequest) (model.MovieDetailResponse, error)

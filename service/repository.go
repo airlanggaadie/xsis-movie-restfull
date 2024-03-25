@@ -10,7 +10,9 @@ import (
 type MovieRepository interface {
 	// GetMoviesPaginate return a paginated list of movies
 	GetMoviesPaginate(ctx context.Context, offset, limit int) ([]model.Movie, int64, error)
-	GetMovie(id uuid.UUID) (model.Movie, error)
+
+	// GetMovie returns a single movie
+	GetMovie(ctx context.Context, id uuid.UUID) (model.Movie, error)
 
 	// InsertMovie inserts a new movie in the database
 	InsertMovie(ctx context.Context, movie model.Movie) (model.Movie, error)

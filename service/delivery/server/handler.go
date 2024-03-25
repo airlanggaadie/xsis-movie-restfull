@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -76,9 +77,18 @@ func (h Handler) listMovie(c echo.Context) error {
 }
 
 func (h Handler) detailMovie(c echo.Context) error {
-	// TODO: validate request and adjust param
-	movie, err := h.movieUsecase.GetMovie(uuid.New())
+	id := c.Param("id")
+	idUUID, err := uuid.Parse(id)
 	if err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	movie, err := h.movieUsecase.GetMovie(c.Request().Context(), idUUID)
+	if err != nil {
+		if errors.Is(err, model.ErrNotFound) {
+			return c.NoContent(http.StatusNotFound)
+		}
+
 		return err
 	}
 

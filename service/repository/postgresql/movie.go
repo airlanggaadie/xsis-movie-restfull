@@ -53,9 +53,21 @@ func (m movieRepository) GetMoviesPaginate(ctx context.Context, offset, limit in
 	return movies, total, nil
 }
 
-func (m movieRepository) GetMovie(id uuid.UUID) (model.Movie, error) {
-	// TODO: do something
-	return model.Movie{}, nil
+func (m movieRepository) GetMovie(ctx context.Context, id uuid.UUID) (model.Movie, error) {
+	var movie model.Movie
+	if err := m.DB.QueryRowContext(ctx, queryGetMovieById, id).Scan(
+		&movie.Id,
+		&movie.Title,
+		&movie.Description,
+		&movie.Rating,
+		&movie.Image,
+		&movie.CreatedAt,
+		&movie.UpdatedAt,
+	); err != nil {
+		return movie, fmt.Errorf("[postgresql][GetMovie] error query: %w", err)
+	}
+
+	return movie, nil
 }
 
 func (m movieRepository) InsertMovie(ctx context.Context, movie model.Movie) (model.Movie, error) {
