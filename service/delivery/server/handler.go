@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"strconv"
 	"xsis/assignment-test/model"
 	"xsis/assignment-test/service"
 
@@ -42,8 +43,31 @@ func (h Handler) healthCheck(c echo.Context) error {
 }
 
 func (h Handler) listMovie(c echo.Context) error {
-	// TODO: validate request and adjust param
-	list, err := h.movieUsecase.GetMoviesPaginate()
+	queryPage := c.QueryParam("page")
+	if queryPage == "" {
+		queryPage = "0"
+	}
+
+	queryLimit := c.QueryParam("limit")
+	if queryLimit == "" {
+		queryLimit = "0"
+	}
+
+	page, err := strconv.Atoi(queryPage)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "invalid query parameter page",
+		})
+	}
+
+	limit, err := strconv.Atoi(queryLimit)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "invalid query parameter limit",
+		})
+	}
+
+	list, err := h.movieUsecase.GetMoviesPaginate(c.Request().Context(), page, limit)
 	if err != nil {
 		return err
 	}

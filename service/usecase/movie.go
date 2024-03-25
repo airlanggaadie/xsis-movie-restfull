@@ -19,9 +19,26 @@ func NewMovieUsecase(movieRepository service.MovieRepository) service.MovieUseca
 	}
 }
 
-func (m movie) GetMoviesPaginate() (model.ListMovieResponse, error) {
-	// TODO: do something
-	return model.ListMovieResponse{}, nil
+func (m movie) GetMoviesPaginate(ctx context.Context, page, limit int) (model.ListMovieResponse, error) {
+	if page == 0 {
+		page = 1
+	}
+
+	if limit == 0 {
+		limit = 10
+	}
+
+	offset := (page - 1) * limit
+
+	movies, total, err := m.movieRepository.GetMoviesPaginate(ctx, offset, limit)
+	if err != nil {
+		return model.ListMovieResponse{}, fmt.Errorf("[usecase][GetMoviePaginate] error get movies: %v", err)
+	}
+
+	return model.ListMovieResponse{
+		Data:  movies,
+		Total: total,
+	}, nil
 }
 
 func (m movie) GetMovie(id uuid.UUID) (model.MovieDetailResponse, error) {

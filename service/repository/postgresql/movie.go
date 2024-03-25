@@ -20,9 +20,37 @@ func NewMovieRepository(db *sql.DB) service.MovieRepository {
 	}
 }
 
-func (m movieRepository) GetMoviesPaginate() ([]model.Movie, error) {
-	// TODO: do something
-	return []model.Movie{}, nil
+func (m movieRepository) GetMoviesPaginate(ctx context.Context, offset, limit int) ([]model.Movie, int64, error) {
+	query, err := m.DB.QueryContext(ctx, queryGetMoviesPaginate, offset, limit)
+	if err != nil {
+		return nil, 0, fmt.Errorf("[postgresql][GetMoviesPaginate] error query: %v", err)
+	}
+	defer query.Close()
+
+	var movies []model.Movie
+	for query.Next() {
+		var movie model.Movie
+		if err := query.Scan(
+			&movie.Id,
+			&movie.Title,
+			&movie.Description,
+			&movie.Rating,
+			&movie.Image,
+			&movie.CreatedAt,
+			&movie.UpdatedAt,
+		); err != nil {
+			return nil, 0, fmt.Errorf("[postgresql][GetMoviesPaginate] error scan: %v", err)
+		}
+
+		movies = append(movies, movie)
+	}
+
+	var total int64
+	if err := m.DB.QueryRowContext(ctx, queryGetMoviesCount).Scan(&total); err != nil {
+		return nil, 0, fmt.Errorf("[postgresql][GetMoviesPaginate] error count: %v", err)
+	}
+
+	return movies, total, nil
 }
 
 func (m movieRepository) GetMovie(id uuid.UUID) (model.Movie, error) {

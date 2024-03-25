@@ -36,7 +36,8 @@ func NewMovie(request AddNewMovieRequest) (Movie, error) {
 }
 
 type ListMovieResponse struct {
-	Data []Movie `json:"data"`
+	Data  []Movie `json:"data"`
+	Total int64   `json:"total"`
 }
 
 type MovieDetailResponse struct {
