@@ -1,4 +1,19 @@
 services:
+  api:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      ENVIRONMENT: development
+      PORT: 3000
+      APP_TZ: Asia/Jakarta
+      DATABASE_URL: postgres://postgres:postgres@db:5432/xsis?sslmode=disable
+    healthcheck:
+      test: curl -f http://localhost:3000/healthz || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
   db:
     image: postgres:15.3-alpine
     ports:
@@ -8,9 +23,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: xsis
-      TZ: UTC
-      TZDATA: UTC
-      PGTZ: UTC
+      TZ: Asia/Jakarta
+      TZDATA: Asia/Jakarta
+      PGTZ: Asia/Jakarta
     healthcheck:
       test: pg_isready -U postgres
       interval: 10s

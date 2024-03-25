@@ -3,6 +3,7 @@ package configuration
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -31,6 +32,7 @@ func Init() *configuration {
 }
 
 func (c *configuration) Start() {
+	fmt.Println("starting apps...")
 	go func() {
 		defer func() {
 			if err, ok := recover().(error); ok && err != nil {
@@ -51,6 +53,7 @@ func (c *configuration) Start() {
 }
 
 func (c *configuration) Stop() {
+	fmt.Println("stopping apps...")
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
 

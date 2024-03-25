@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -8,6 +9,7 @@ import (
 )
 
 func (c *configuration) initServer() *configuration {
+	fmt.Println("setting up the server...")
 	env, ok := os.LookupEnv("ENVIRONMENT")
 	if !ok {
 		env = "development"

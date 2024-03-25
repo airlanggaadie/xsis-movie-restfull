@@ -3,6 +3,7 @@ package configuration
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -11,6 +12,7 @@ import (
 )
 
 func (c *configuration) initPostgreSql() *configuration {
+	fmt.Println("setting up database connection...")
 	dbURL, ok := os.LookupEnv("DATABASE_URL")
 	if !ok {
 		dbURL = "postgres://postgres:postgres@localhost:5432/xsis?sslmode=disable"
@@ -28,6 +30,7 @@ func (c *configuration) initPostgreSql() *configuration {
 }
 
 func (c *configuration) migrate() *configuration {
+	fmt.Println("running migration...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
