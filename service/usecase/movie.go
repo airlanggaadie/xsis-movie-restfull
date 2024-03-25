@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+	"fmt"
 	"xsis/assignment-test/model"
 	"xsis/assignment-test/service"
 
@@ -27,9 +29,22 @@ func (m movie) GetMovie(id uuid.UUID) (model.MovieDetailResponse, error) {
 	return model.MovieDetailResponse{}, nil
 }
 
-func (m movie) CreateMovie(movie model.Movie) (model.MovieDetailResponse, error) {
-	// TODO: do something
-	return model.MovieDetailResponse{}, nil
+func (m movie) AddNewMovie(ctx context.Context, request model.AddNewMovieRequest) (model.MovieDetailResponse, error) {
+	// prepare new movie
+	newMovie, err := model.NewMovie(request)
+	if err != nil {
+		return model.MovieDetailResponse{}, fmt.Errorf("[usecase][AddNewMovie] error new movie: %v", err)
+	}
+
+	// add new movie to db
+	newMovie, err = m.movieRepository.InsertMovie(ctx, newMovie)
+	if err != nil {
+		return model.MovieDetailResponse{}, fmt.Errorf("[usecase][AddNewMovie] error create movie: %v", err)
+	}
+
+	return model.MovieDetailResponse{
+		Movie: newMovie,
+	}, nil
 }
 
 func (m movie) UpdateMovie(id uuid.UUID, movie model.Movie) (model.MovieDetailResponse, error) {

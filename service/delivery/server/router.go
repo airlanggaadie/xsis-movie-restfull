@@ -8,7 +8,7 @@ func (h *Handler) routes() {
 	movieGroup := h.router.Group("/Movies")
 	movieGroup.GET("", h.listMovie)
 	movieGroup.GET("/:id", h.detailMovie)
-	movieGroup.POST("", h.createMovie)
+	movieGroup.POST("", h.addNewMovie)
 	movieGroup.PUT("", h.updateMovie)
 	movieGroup.DELETE("", h.deleteMovie)
 }

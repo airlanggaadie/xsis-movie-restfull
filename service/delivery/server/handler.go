@@ -61,9 +61,22 @@ func (h Handler) detailMovie(c echo.Context) error {
 	return c.JSON(http.StatusOK, movie)
 }
 
-func (h Handler) createMovie(c echo.Context) error {
-	// TODO: validate request and adjust param
-	movie, err := h.movieUsecase.CreateMovie(model.Movie{})
+func (h Handler) addNewMovie(c echo.Context) error {
+	// validate request and adjust param
+	var body model.AddNewMovieRequest
+	err := c.Bind(&body)
+	if err != nil {
+		return err
+	}
+
+	err = body.Validate()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": err.Error(),
+		})
+	}
+
+	movie, err := h.movieUsecase.AddNewMovie(c.Request().Context(), body)
 	if err != nil {
 		return err
 	}

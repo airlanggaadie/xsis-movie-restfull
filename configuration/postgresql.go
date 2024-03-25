@@ -43,8 +43,8 @@ func (c *configuration) migrate() *configuration {
 			description			TEXT DEFAULT '',
 			rating 				DECIMAL DEFAULT 0,
 			image				TEXT DEFAULT '',
-			created_at          TIMESTAMP NOT NULL,
-			updated_at          TIMESTAMP NOT NULL
+			created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);`,
 	}
 
