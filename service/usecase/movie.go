@@ -21,7 +21,7 @@ func NewMovieUsecase(movieRepository service.MovieRepository) service.MovieUseca
 	}
 }
 
-func (m movie) GetMoviesPaginate(ctx context.Context, page, limit int) (model.ListMovieResponse, error) {
+func (m movie) GetMoviesPaginate(ctx context.Context, search string, page, limit int) (model.ListMovieResponse, error) {
 	if page == 0 {
 		page = 1
 	}
@@ -32,7 +32,7 @@ func (m movie) GetMoviesPaginate(ctx context.Context, page, limit int) (model.Li
 
 	offset := (page - 1) * limit
 
-	movies, total, err := m.movieRepository.GetMoviesPaginate(ctx, offset, limit)
+	movies, total, err := m.movieRepository.GetMoviesPaginate(ctx, search, offset, limit)
 	if err != nil {
 		return model.ListMovieResponse{}, fmt.Errorf("[usecase][GetMoviePaginate] error get movies: %v", err)
 	}

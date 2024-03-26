@@ -11,7 +11,7 @@ import (
 
 type movieRepositorySuccessMock struct{}
 
-func (m movieRepositorySuccessMock) GetMoviesPaginate(ctx context.Context, offset, limit int) ([]model.Movie, int64, error) {
+func (m movieRepositorySuccessMock) GetMoviesPaginate(ctx context.Context, search string, offset, limit int) ([]model.Movie, int64, error) {
 	return []model.Movie{}, 0, nil
 }
 
@@ -47,7 +47,7 @@ func (m movieRepositorySuccessMock) DeleteMovie(ctx context.Context, id uuid.UUI
 
 type movieRepositoryFailMock struct{}
 
-func (m movieRepositoryFailMock) GetMoviesPaginate(ctx context.Context, offset, limit int) ([]model.Movie, int64, error) {
+func (m movieRepositoryFailMock) GetMoviesPaginate(ctx context.Context, search string, offset, limit int) ([]model.Movie, int64, error) {
 	return []model.Movie{}, 0, errors.New("failed to get movies")
 }
 

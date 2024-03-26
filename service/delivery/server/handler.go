@@ -54,6 +54,8 @@ func (h Handler) listMovie(c echo.Context) error {
 		queryLimit = "0"
 	}
 
+	querySearch := c.QueryParam("q")
+
 	page, err := strconv.Atoi(queryPage)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
@@ -68,7 +70,7 @@ func (h Handler) listMovie(c echo.Context) error {
 		})
 	}
 
-	list, err := h.movieUsecase.GetMoviesPaginate(c.Request().Context(), page, limit)
+	list, err := h.movieUsecase.GetMoviesPaginate(c.Request().Context(), querySearch, page, limit)
 	if err != nil {
 		return err
 	}

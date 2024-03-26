@@ -20,8 +20,18 @@ func NewMovieRepository(db *sql.DB) service.MovieRepository {
 	}
 }
 
-func (m movieRepository) GetMoviesPaginate(ctx context.Context, offset, limit int) ([]model.Movie, int64, error) {
-	query, err := m.DB.QueryContext(ctx, queryGetMoviesPaginate, offset, limit)
+func (m movieRepository) GetMoviesPaginate(ctx context.Context, search string, offset, limit int) ([]model.Movie, int64, error) {
+	var (
+		query *sql.Rows
+		err   error
+	)
+
+	if search == "" {
+		query, err = m.DB.QueryContext(ctx, queryGetMoviesPaginate, offset, limit)
+	} else {
+		query, err = m.DB.QueryContext(ctx, queryGetMoviesByTitlePaginate, "%"+search+"%", offset, limit)
+	}
+
 	if err != nil {
 		return nil, 0, fmt.Errorf("[postgresql][GetMoviesPaginate] error query: %v", err)
 	}

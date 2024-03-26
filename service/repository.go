@@ -9,7 +9,7 @@ import (
 
 type MovieRepository interface {
 	// GetMoviesPaginate return a paginated list of movies
-	GetMoviesPaginate(ctx context.Context, offset, limit int) ([]model.Movie, int64, error)
+	GetMoviesPaginate(ctx context.Context, search string, offset, limit int) ([]model.Movie, int64, error)
 
 	// GetMovie returns a single movie
 	GetMovie(ctx context.Context, id uuid.UUID) (model.Movie, error)

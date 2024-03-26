@@ -108,7 +108,7 @@ func Test_movie_GetMoviesPaginate(t *testing.T) {
 			m := movie{
 				movieRepository: tt.fields.movieRepository,
 			}
-			got, err := m.GetMoviesPaginate(tt.args.ctx, tt.args.page, tt.args.limit)
+			got, err := m.GetMoviesPaginate(tt.args.ctx, "", tt.args.page, tt.args.limit)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("movie.GetMoviesPaginate() error = %v, wantErr %v", err, tt.wantErr)
 				return
